@@ -40,25 +40,31 @@ function createTimeOutEvent(employeeObj, dateWithTimeOut){
     return employeeObj
 }
 
-function hoursWorkedOnDate(employeeObj){
-    let inHour = employeeObj.timeInEvents[0].hour
-    let outHour = employeeObj.timeOutEvents[0].hour
-    let hoursWorked = (outHour - inHour)/100
-    console.log(hoursWorked)
-    return hoursWorked
+function hoursWorkedOnDate(employeeObj, date){
+    let inTime = employeeObj.timeInEvents.find(element => element.date === date)
+    let outTime = employeeObj.timeOutEvents.find(element => element.date === date)
+    let totalHours = (outTime.hour - inTime.hour)/100
+    return totalHours
 }
 
-function wagesEarnedOnDate(employeeObj){
-    let manHours = hoursWorkedOnDate(employeeObj)
+function wagesEarnedOnDate(employeeObj, date){
+    let manHours = hoursWorkedOnDate(employeeObj, date)
     let totalWage = manHours * employeeObj.payPerHour
     return totalWage;
 }
 
 function allWagesFor(employeeObj){
-    console.log(employeeObj)
-    console.log(wagesEarnedOnDate(employeeObj))
+    let eligibleDates = employeeObj.timeInEvents.map(record => record.date)
+    console.log(eligibleDates)
+    let total = eligibleDates.reduce((accumulator, date) =>{
+        return accumulator + wagesEarnedOnDate(employeeObj, date)
+    },0)
+    return total
 }
 
-function calculatePayroll(multiEmployeeObj){
-    
+function calculatePayroll(multiEmployeeArray){
+    let multiPayroll = multiEmployeeArray.reduce((accumulator, record) =>{
+        return accumulator + allWagesFor(record)
+    },0)
+    return multiPayroll
 }
